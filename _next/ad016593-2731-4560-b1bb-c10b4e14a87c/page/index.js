@@ -1,1 +1,0 @@
-module.exports=__NEXT_REGISTER_PAGE("/",function(){var e=webpackJsonp([3],{230:function(e,t,r){e.exports=r(231)},231:function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:true});var u=r(7);var n=r.n(u);var a=function e(){return n.a.createElement("a",{href:"/bubble-sort"},"bubble sort")};t["default"]=a}},[230]);return{page:e.default}});
