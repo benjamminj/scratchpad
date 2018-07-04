@@ -1,1 +1,0 @@
-module.exports=__NEXT_REGISTER_PAGE("/",function(){var e=webpackJsonp([3],{230:function(e,t,r){e.exports=r(231)},231:function(e,t,r){"use strict";Object.defineProperty(t,"__esModule",{value:true});var u=r(7);var a=r.n(u);var n=function e(){return a.a.createElement("a",{href:"/scratchpad/bubble-sort"},"bubble sort")};t["default"]=n}},[230]);return{page:e.default}});
