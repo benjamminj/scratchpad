@@ -17,15 +17,14 @@ const shuffle = arr => {
 };
 
 class Page extends React.Component {
-  static async getInitialProps() {
-    console.log(range)
-    return { items: shuffle(range(1, 10)) };
+  state = {
+    items: shuffle(range(1, 10))
   }
 
   render() {
     return (
       <div>
-        <BubbleSort items={this.props.items} />
+        <BubbleSort items={this.state.items} />
       </div>
     );
   }

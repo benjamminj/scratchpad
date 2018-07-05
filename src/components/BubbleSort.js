@@ -1,18 +1,20 @@
-import React, { Component } from 'react';
-// import PT from 'prop-types';
-import clone from 'ramda/src/clone';
-import range from 'ramda/src/range';
+import React, { Component } from 'react'
+import clone from 'ramda/src/clone'
+import range from 'ramda/src/range'
+import { css } from 'emotion'
 
 const Item = ({ item, isCurrent }) => (
-  <li>
-    {item}
-    <style jsx>{`
+  <li
+    className={css`
       text-decoration: ${isCurrent ? 'underline' : 'none'};
       list-style-type: none;
       padding: 0.5rem;
-    `}</style>
+      /* font-family: monospace; */
+    `}
+  >
+    {item}
   </li>
-);
+)
 
 export class BubbleSort extends Component {
   state = {
@@ -20,34 +22,34 @@ export class BubbleSort extends Component {
     swap: true,
     index: 0,
     currentTick: 'compare',
-  };
+  }
 
   swapItems = (firstIndex, secondIndex) => {
-    const copy = clone(this.state.items);
+    const copy = clone(this.state.items)
 
-    const temp = copy[firstIndex];
-    copy[firstIndex] = copy[secondIndex];
-    copy[secondIndex] = temp;
+    const temp = copy[firstIndex]
+    copy[firstIndex] = copy[secondIndex]
+    copy[secondIndex] = temp
 
-    return copy;
-  };
+    return copy
+  }
 
   start = () => {
-    this.interval = window.setInterval(this.nextTick, 250);
-  };
+    this.interval = window.setInterval(this.nextTick, 250)
+  }
 
   stop = () => {
-    window.clearInterval(this.interval);
-  };
+    window.clearInterval(this.interval)
+  }
 
   componentWillUnmount() {
     if (this.interval) {
-      window.clearInterval(this.interval);
+      window.clearInterval(this.interval)
     }
   }
 
   nextTick = () => {
-    const { currentTick, items, index, swap } = this.state;
+    const { currentTick, items, index, swap } = this.state
 
     switch (currentTick) {
       case 'compare': {
@@ -57,48 +59,48 @@ export class BubbleSort extends Component {
             currentTick: swap === true ? 'compare' : 'end',
             index: 0,
             swap: false,
-          }));
+          }))
         }
 
-        const shouldSwap = items[index] > items[index + 1];
+        const shouldSwap = items[index] > items[index + 1]
 
         if (shouldSwap) {
           return this.setState(state => ({
             ...state,
             currentTick: 'swap',
             swap: true,
-          }));
+          }))
         }
 
-        return this.setState(state => ({ ...state, currentTick: 'noswap' }));
+        return this.setState(state => ({ ...state, currentTick: 'noswap' }))
       }
       case 'swap': {
-        console.log('swap!');
+        console.log('swap!')
         return this.setState(state => ({
           ...state,
           currentTick: 'next',
           items: this.swapItems(index, index + 1),
-        }));
+        }))
       }
       case 'noswap':
         return this.setState(state => ({
           ...state,
-          currentTick: 'next'
+          currentTick: 'next',
         }))
       case 'next':
         return this.setState(state => ({
           ...state,
           currentTick: 'compare',
           index: state.index + 1,
-        }));
+        }))
       case 'end':
       default:
-        break;
+        break
     }
-  };
+  }
 
   render() {
-    const { props, state } = this;
+    const { props, state } = this
     return (
       <div>
         <h1>header</h1>
@@ -121,6 +123,6 @@ export class BubbleSort extends Component {
           }
         `}</style>
       </div>
-    );
+    )
   }
 }
