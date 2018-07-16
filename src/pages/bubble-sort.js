@@ -2,6 +2,7 @@ import { BubbleSort } from '../components/BubbleSort';
 import range from 'ramda/src/range';
 import clone from 'ramda/src/clone';
 import React from 'react';
+import Layout from '../components/layout';
 
 const shuffle = arr => {
   const copy = clone(arr);
@@ -18,14 +19,14 @@ const shuffle = arr => {
 
 class Page extends React.Component {
   state = {
-    items: shuffle(range(1, 10))
+    items: shuffle(range(1, 11))
   }
 
   render() {
     return (
-      <div>
+      <Layout>
         <BubbleSort items={this.state.items} />
-      </div>
+      </Layout>
     );
   }
 }

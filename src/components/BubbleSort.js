@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import clone from 'ramda/src/clone'
-import range from 'ramda/src/range'
 import { css } from 'emotion'
+import { fontMono } from '../styles/variables'
 
 const Item = ({ item, isCurrent }) => (
   <li
@@ -9,7 +9,7 @@ const Item = ({ item, isCurrent }) => (
       text-decoration: ${isCurrent ? 'underline' : 'none'};
       list-style-type: none;
       padding: 0.5rem;
-      /* font-family: monospace; */
+      font-family: ${fontMono};
     `}
   >
     {item}
@@ -17,12 +17,14 @@ const Item = ({ item, isCurrent }) => (
 )
 
 export class BubbleSort extends Component {
-  state = {
+  initialState = {
     items: this.props.items,
     swap: true,
     index: 0,
-    currentTick: 'compare',
+    currentTick: 'init',
   }
+
+  state = this.initialState
 
   swapItems = (firstIndex, secondIndex) => {
     const copy = clone(this.state.items)
@@ -35,11 +37,16 @@ export class BubbleSort extends Component {
   }
 
   start = () => {
-    this.interval = window.setInterval(this.nextTick, 250)
+    this.interval = window.setInterval(this.nextTick, 50)
   }
 
   stop = () => {
     window.clearInterval(this.interval)
+  }
+
+  reset = () => {
+    this.stop()
+    this.setState(this.initialState)
   }
 
   componentWillUnmount() {
@@ -52,6 +59,9 @@ export class BubbleSort extends Component {
     const { currentTick, items, index, swap } = this.state
 
     switch (currentTick) {
+      case 'init': {
+        return this.setState(state => ({ currentTick: 'compare' }))
+      }
       case 'compare': {
         if (index + 1 === items.length) {
           return this.setState(state => ({
@@ -75,7 +85,6 @@ export class BubbleSort extends Component {
         return this.setState(state => ({ ...state, currentTick: 'noswap' }))
       }
       case 'swap': {
-        console.log('swap!')
         return this.setState(state => ({
           ...state,
           currentTick: 'next',
@@ -100,28 +109,42 @@ export class BubbleSort extends Component {
   }
 
   render() {
-    const { props, state } = this
+    const { state } = this
     return (
       <div>
-        <h1>header</h1>
+        <h1
+          className={css`
+            font-size: 1.5rem;
+          `}
+        >
+          bubble sort
+        </h1>
         <button onClick={this.start} disabled={state.currentTick === 'end'}>
-          {state.currentTick === 'end' ? 'yay' : 'next tick'}
+          {state.currentTick === 'end' ? 'done 🎉' : 'start'}
         </button>
 
-        <button onClick={this.stop} disabled={!this.interval}>
-          stop
+        <button
+          onClick={this.stop}
+          disabled={!this.interval || state.currentTick === 'end'}
+        >
+          pause
         </button>
 
-        <ul>
+        <button onClick={this.reset} disabled={state.currentTick === 'init'}>
+          reset
+        </button>
+
+        <ul
+          className={css`
+            margin: 1rem 0;
+            padding-left: 0;
+            display: flex;
+          `}
+        >
           {state.items.map((item, i) => (
             <Item item={item} isCurrent={state.index === i} key={item} />
           ))}
         </ul>
-        <style jsx>{`
-          ul {
-            display: flex;
-          }
-        `}</style>
       </div>
     )
   }

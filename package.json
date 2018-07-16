@@ -9,6 +9,7 @@
     "gatsby": "next",
     "gatsby-plugin-emotion": "^1.1.17",
     "gatsby-plugin-react-helmet": "next",
+    "gh-pages": "^1.2.0",
     "ramda": "^0.25.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
