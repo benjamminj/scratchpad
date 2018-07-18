@@ -1,22 +1,14 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import clone from 'ramda/src/clone'
 import { css } from 'emotion'
-import { fontMono } from '../styles/variables'
-
-const Item = ({ item, isCurrent }) => (
-  <li
-    className={css`
-      text-decoration: ${isCurrent ? 'underline' : 'none'};
-      list-style-type: none;
-      padding: 0.5rem;
-      font-family: ${fontMono};
-    `}
-  >
-    {item}
-  </li>
-)
+import { NumberItem } from './NumberItem'
 
 export class BubbleSort extends Component {
+  static propTypes = {
+    items: PropTypes.array,
+  }
+
   initialState = {
     items: this.props.items,
     swap: true,
@@ -119,6 +111,7 @@ export class BubbleSort extends Component {
         >
           bubble sort
         </h1>
+        
         <button onClick={this.start} disabled={state.currentTick === 'end'}>
           {state.currentTick === 'end' ? 'done 🎉' : 'start'}
         </button>
@@ -142,7 +135,7 @@ export class BubbleSort extends Component {
           `}
         >
           {state.items.map((item, i) => (
-            <Item item={item} isCurrent={state.index === i} key={item} />
+            <NumberItem item={item} isCurrent={state.index === i} key={item} />
           ))}
         </ul>
       </div>
