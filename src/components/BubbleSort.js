@@ -13,13 +13,14 @@ export class BubbleSort extends Component {
     items: this.props.items,
     swap: true,
     index: 0,
+    action: 'init',
     currentTick: 'init',
   }
 
   state = this.initialState
 
-  swapItems = (firstIndex, secondIndex) => {
-    const copy = clone(this.state.items)
+  swapItems = (firstIndex, secondIndex, items=this.state.items) => {
+    const copy = clone(items)
 
     const temp = copy[firstIndex]
     copy[firstIndex] = copy[secondIndex]
@@ -29,7 +30,7 @@ export class BubbleSort extends Component {
   }
 
   start = () => {
-    this.interval = window.setInterval(this.nextTick, 50)
+    this.interval = window.setInterval(this.reduceState, 200)
   }
 
   stop = () => {
@@ -47,6 +48,49 @@ export class BubbleSort extends Component {
     }
   }
 
+  reduceState = () => {
+    const { action } = this.state
+    console.log('reduce')
+    switch(action) {
+      case 'init':
+        return this.setState({ action: 'next' })
+      case 'compareNextItem':
+        return this.setState(this.compareNextItem)
+      case 'end':
+      default:
+        return;
+    }
+  }
+
+  compareNextItem = state => {
+    const {items, index, swap} = state;
+
+    const isLast = index === items.length - 1;
+
+    if (isLast) {
+      return swap ? {
+        ...state,
+        swap: false,
+        index: 0,
+      } : {
+        ...state,
+        action: 'end'
+      }
+    }
+
+    const next = items[index + 1]
+    const needsSwap = items[index] > items[next]
+    console.log(needsSwap)
+
+    return {
+      ...state,
+      swap: swap || needsSwap,
+      index: index + 1,
+      items: needsSwap ? this.swapItems(index, next, items) : items
+    }
+  }
+
+  // TODO -- deprecate in favor of reduceState
   nextTick = () => {
     const { currentTick, items, index, swap } = this.state
 
@@ -113,17 +157,17 @@ export class BubbleSort extends Component {
         </h1>
         
         <button onClick={this.start} disabled={state.currentTick === 'end'}>
-          {state.currentTick === 'end' ? 'done 🎉' : 'start'}
+          {state.action === 'end' ? 'done 🎉' : 'start'}
         </button>
 
         <button
           onClick={this.stop}
-          disabled={!this.interval || state.currentTick === 'end'}
+          disabled={!this.interval || state.action === 'end'}
         >
           pause
         </button>
 
-        <button onClick={this.reset} disabled={state.currentTick === 'init'}>
+        <button onClick={this.reset} disabled={state.action === 'init'}>
           reset
         </button>
 

@@ -3,6 +3,13 @@
 node_modules/
 yarn-error.log
 
+# Reason artifacts
+**/*.bs.js
+lib/
+.merlin
+.bsb.lock
+
 # Build directory
 /public
 .DS_Store
+

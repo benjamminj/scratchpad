@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { css } from 'emotion'
-import flow from 'lodash/flow'
 import { fontSizeExtraLarge } from '../styles/variables'
 import { NumberItem } from './NumberItem'
 import clone from 'ramda/src/clone'
