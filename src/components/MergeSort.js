@@ -9,9 +9,12 @@ export class MergeSort extends Component {
   }
 
   initialState = {
-    items: this.props.items,
+    items: [this.props.items],
     action: 'init',
-    component: null,
+    component: [this.props.items].map((item, i) => (
+      <pre key={i}>{JSON.stringify(item)}</pre>
+    )),
+    depth: 1,
   }
 
   state = this.initialState
@@ -29,7 +32,6 @@ export class MergeSort extends Component {
     this.setState(this.initialState)
   }
 
-
   componentWillUnmount() {
     if (this.interval) {
       window.clearInterval(this.interval)
@@ -37,64 +39,89 @@ export class MergeSort extends Component {
   }
 
   reduceState = () => {
-    const { action } = this.state;
-    switch(action) {
-      case 'init': 
+    const { action } = this.state
+
+    switch (action) {
+      case 'init':
         return this.setState({ action: 'divide' })
       case 'divide':
+        return this.setState(this.divide)
+      case 'stitch':
+        console.log('stitch');
+        this.stop();
+        return this.state;
       // step 1: divide
-          // put a space between each group or render it below?
-      
+      // put a space between each group or render it below?
+
       // keep dividing the array down until we have only arrays of 1 / 2
       // when we're in the sorting stage, swap the arrays based on the first item
       // then create some way to let the parent stage know we're sorted?
       // then progress the stack level back up
       default:
-        return this.state;
+        return this.state
     }
-  }
-
-  setNextComponent = ({ items, depth }) => {
-    if (depth === 0 && items.length) {
-      // return the tick to fire the next action with increased depth
-      return;
-    }
-    if (items.length === 1 || depth === 0) {
-      // will make sure that depth doesn't keep increasing, 
-      // it's time to turn around & start sorting!
-      this.toggleSort() 
-      return;
-    }
-
-    // split the array here into head & tail
-
-    return (
-      <div>
-        {/* render the list here, this counts as the "branch" of the "tree" */}
-        {/* recursively render this method again with the first half & the 2nd half, decrementing the "depth" */}
-      </div>
-    )
   }
 
   // marks the `switch point` where we stop dividing the array & start sorting it
-  toggleSort = state => ({});
+  toggleSort = state => ({})
   divide = state => {
-    const { items } = state
+    const { items, component } = state
 
-    // create an array w/ sub-arrays?
-    // or recursively render the array?
-    // `this.state.depth` drilled into component...use it to re-render the next layer down
-    // 
+    if (items.length === this.props.items.length) {
+      return {
+        ...state,
+        action: 'stitch',
+      }
+    }
+    // TODO -- while dividing, make sure that once we've divided the array into an array of arrays that
+    // equals the original array in length (i.e. and array of single-item arrays) we flip the toggle to go back up
+    const divideItems = (item) => {
+      // is the item an array?
+      // divide it in 2, spread the contents into the new item
+      const middle = Math.ceil((item.length - 1) / 2)
+      const firstHalf = item.slice(0, middle)
+      const lastHalf = item.slice(middle)
 
-    // take the array of items, & reduce into a new array w/ subarrays
-    // if any of the subarrays have longer than length 1, split them into 2 subarrays
-    // if all the subarrays are length 1, change the action type
+      return [firstHalf, lastHalf]
+    }
+
+    const nextItems = items.reduce((acc, item) => {
+      // stop splitting out the arrays once we have all arrays of single items
+      if (item.length === 1) {
+        return [...acc, item]
+      }
+
+      const middle = Math.ceil((item.length - 1) / 2)
+      const firstHalf = item.slice(0, middle)
+      const lastHalf = item.slice(middle)
+
+      return [...acc, firstHalf, lastHalf]
+    }, [])
+
+    const nextComponent = (
+      <>
+        {component}
+
+        <pre>{JSON.stringify(nextItems)}</pre>
+      </>
+    )
+
+    return {
+      ...state,
+      action: 'divide',
+      component: nextComponent,
+      items: nextItems,
+    }
   }
+
+  stitchArrays = (state) => {}
 
   render() {
     return (
       <div>
-        <span>{this.state.items}</span>
+        <button onClick={this.start}>start</button>
+        <button onClick={this.stop}>stop</button>
+
         {this.state.component}
       </div>
     )
