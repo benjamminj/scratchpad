@@ -14,7 +14,6 @@ export class MergeSort extends Component {
     component: [this.props.items].map((item, i) => (
       <pre key={i}>{JSON.stringify(item)}</pre>
     )),
-    depth: 1,
   }
 
   state = this.initialState
@@ -47,7 +46,9 @@ export class MergeSort extends Component {
       case 'divide':
         return this.setState(this.divide)
       case 'stitch':
-        console.log('stitch');
+        this.setState(this.stitchArrays);
+        return this.state
+      case 'end':
         this.stop();
         return this.state;
       // step 1: divide
@@ -73,9 +74,8 @@ export class MergeSort extends Component {
         action: 'stitch',
       }
     }
-    // TODO -- while dividing, make sure that once we've divided the array into an array of arrays that
-    // equals the original array in length (i.e. and array of single-item arrays) we flip the toggle to go back up
-    const divideItems = (item) => {
+
+    const divideItems = item => {
       // is the item an array?
       // divide it in 2, spread the contents into the new item
       const middle = Math.ceil((item.length - 1) / 2)
@@ -114,7 +114,33 @@ export class MergeSort extends Component {
     }
   }
 
-  stitchArrays = (state) => {}
+  stitchArrays = state => {
+    const { items, component } = state
+
+    // by the time we're flipping this on, we can expect an array of arrays
+    // take each array, & join it with the one next to it.
+    const nextItems = items.reduce((acc, item, i) => {
+      if (i % 2 === 0 && items[i + 1]) {
+        const current = items[i];
+        const next = items[i + 1];
+
+        const joinIndex = next.findIndex(n => n < current[0])
+
+        next.splice(joinIndex, 0, ...current)
+
+        acc.push(next)
+      }
+
+      return acc;
+    }, [])
+
+    console.log(nextItems)
+
+    this.setState({
+      action: 'end',
+      items: nextItems
+    })
+  }
 
   render() {
     return (
