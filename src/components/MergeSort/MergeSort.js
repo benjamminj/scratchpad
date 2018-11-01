@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { css } from 'emotion'
-import { NumberItem } from '../NumberItem'
 import clone from 'ramda/src/clone'
 
 const INIT = 'init'
@@ -61,13 +59,6 @@ export class MergeSort extends Component {
       case END:
         this.stop()
         return this.state
-      // step 1: divide
-      // put a space between each group or render it below?
-
-      // keep dividing the array down until we have only arrays of 1 / 2
-      // when we're in the sorting stage, swap the arrays based on the first item
-      // then create some way to let the parent stage know we're sorted?
-      // then progress the stack level back up
       default:
         return this.state
     }
@@ -81,16 +72,6 @@ export class MergeSort extends Component {
         ...state,
         action: STITCH,
       }
-    }
-
-    const divideItems = item => {
-      // is the item an array?
-      // divide it in 2, spread the contents into the new item
-      const middle = Math.ceil((item.length - 1) / 2)
-      const firstHalf = item.slice(0, middle)
-      const lastHalf = item.slice(middle)
-
-      return [firstHalf, lastHalf]
     }
 
     const nextItems = items.reduce((acc, item) => {
