@@ -1,25 +1,35 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { css } from 'emotion'
-import { NumberItem } from './NumberItem'
+import { NumberItem } from '../NumberItem'
+import clone from 'ramda/src/clone'
+
+const INIT = 'init'
+const DIVIDE = 'divide'
+const STITCH = 'stitch'
+const END = 'end'
 
 export class MergeSort extends Component {
   static propTypes = {
     items: PropTypes.array,
+    /** time between operations (in milliseconds) */
+    interval: PropTypes.number,
+  }
+
+  static defaultProps = {
+    items: [],
+    interval: 500,
   }
 
   initialState = {
-    items: [this.props.items],
-    action: 'init',
-    component: [this.props.items].map((item, i) => (
-      <pre key={i}>{JSON.stringify(item)}</pre>
-    )),
+    items: this.props.items,
+    action: INIT,
   }
 
   state = this.initialState
 
   start = () => {
-    this.interval = window.setInterval(this.reduceState, 500)
+    this.interval = window.setInterval(this.reduceState, this.props.interval)
   }
 
   stop = () => {
@@ -38,19 +48,19 @@ export class MergeSort extends Component {
   }
 
   reduceState = () => {
-    const { action } = this.state
+    const { action, items } = this.state
 
     switch (action) {
-      case 'init':
-        return this.setState({ action: 'divide' })
-      case 'divide':
+      case INIT:
+        return this.setState({ action: DIVIDE, items: [items] })
+      case DIVIDE:
         return this.setState(this.divide)
-      case 'stitch':
-        this.setState(this.stitchArrays);
+      case STITCH:
+        this.setState(this.stitchArrays)
         return this.state
-      case 'end':
-        this.stop();
-        return this.state;
+      case END:
+        this.stop()
+        return this.state
       // step 1: divide
       // put a space between each group or render it below?
 
@@ -63,15 +73,13 @@ export class MergeSort extends Component {
     }
   }
 
-  // marks the `switch point` where we stop dividing the array & start sorting it
-  toggleSort = state => ({})
   divide = state => {
-    const { items, component } = state
+    const { items } = state
 
     if (items.length === this.props.items.length) {
       return {
         ...state,
-        action: 'stitch',
+        action: STITCH,
       }
     }
 
@@ -98,48 +106,65 @@ export class MergeSort extends Component {
       return [...acc, firstHalf, lastHalf]
     }, [])
 
-    const nextComponent = (
-      <>
-        {component}
-
-        <pre>{JSON.stringify(nextItems)}</pre>
-      </>
-    )
-
     return {
       ...state,
-      action: 'divide',
-      component: nextComponent,
+      action: DIVIDE,
       items: nextItems,
     }
   }
 
+  merge = (left, right) => {
+    let result = []
+    let indexLeft = 0
+    let indexRight = 0
+
+    while (indexLeft < left.length && indexRight < right.length) {
+      const leftValue = left[indexLeft]
+      const rightValue = right[indexRight]
+
+      if (leftValue < rightValue) {
+        result.push(leftValue)
+        indexLeft++
+      } else {
+        result.push(rightValue)
+        indexRight++
+      }
+    }
+
+    const leftRest = left.slice(indexLeft)
+    const rightRest = right.slice(indexRight)
+
+    return [...result, ...leftRest, ...rightRest]
+  }
+
   stitchArrays = state => {
-    const { items, component } = state
+    const { items } = state
 
-    // by the time we're flipping this on, we can expect an array of arrays
-    // take each array, & join it with the one next to it.
-    const nextItems = items.reduce((acc, item, i) => {
-      if (i % 2 === 0 && items[i + 1]) {
-        const current = items[i];
-        const next = items[i + 1];
+    if (items.length === 1) {
+      return {
+        items: items[0],
+        action: END,
+      }
+    }
 
-        const joinIndex = next.findIndex(n => n < current[0])
-
-        next.splice(joinIndex, 0, ...current)
-
-        acc.push(next)
+    const cloned = clone(items)
+    const nextItems = cloned.reduce((acc, group, i) => {
+      // Since the merging operation merges 2 items, only operate on every other item.
+      if (i % 2 === 0) {
+        const left = cloned[i]
+        const right = cloned[i + 1] || []
+        const merged = this.merge(left, right)
+        
+        acc.push(merged)
       }
 
-      return acc;
+      return acc
     }, [])
 
-    console.log(nextItems)
-
-    this.setState({
-      action: 'end',
-      items: nextItems
-    })
+    return {
+      action: STITCH,
+      items: nextItems,
+    }
   }
 
   render() {
@@ -148,7 +173,7 @@ export class MergeSort extends Component {
         <button onClick={this.start}>start</button>
         <button onClick={this.stop}>stop</button>
 
-        {this.state.component}
+        <pre>{JSON.stringify(this.state.items)}</pre>
       </div>
     )
   }
