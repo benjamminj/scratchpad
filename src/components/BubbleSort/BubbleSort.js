@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import clone from 'ramda/src/clone'
 import { css } from 'emotion'
-import { NumberItem } from './NumberItem'
+import { NumberItem } from '../NumberItem'
 
 const INIT = 'init';
 const END = 'end';

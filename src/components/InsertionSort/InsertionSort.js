@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { css } from 'emotion'
-import { fontSizeExtraLarge } from '../styles/variables'
-import { NumberItem } from './NumberItem'
+import { fontSizeExtraLarge } from '../../styles/variables'
+import { NumberItem } from '../NumberItem'
 import clone from 'ramda/src/clone'
 
 export class InsertionSort extends Component {
